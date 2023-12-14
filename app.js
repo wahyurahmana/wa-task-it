@@ -16,9 +16,9 @@ client.on('qr', qr => {
 client.on('message', async (message) =>{
   try {
     const send = [];
-    if(message.body.split(' ')[0] === '/task'){
+    if(message.body.split(' ')[0].toLowerCase() === '/task'){
       const sql = 'select * from task where tim = $1 and created = $2';
-      const values = [message.body.split(' ')[1], message.body.split(' ')[2]]
+      const values = [message.body.split(' ')[1].toLowerCase(), message.body.split(' ')[2]]
       const result = await pool.query(sql, values)
       for (let i = 0; i < result.rows.length; i++) {
         send.push(`- ${result.rows[i].deskripsi}\n`)
@@ -28,10 +28,10 @@ client.on('message', async (message) =>{
       }else{
         message.reply(send.join(''))
       }
-    }else if(message.body.split(' ')[0] === '/now'){
+    }else if(message.body.split(' ')[0].toLowerCase() === '/now'){
       const taskNow =  moment.tz('Asia/Makassar').format().split('T')[0]
       const sql = 'select * from task where tim = $1 and created = $2';
-      const values = [message.body.split(' ')[1], taskNow]
+      const values = [message.body.split(' ')[1].toLowerCase(), taskNow]
       const result = await pool.query(sql, values)
       for (let i = 0; i < result.rows.length; i++) {
         send.push(`- ${result.rows[i].deskripsi}\n`)
