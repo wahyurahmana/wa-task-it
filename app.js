@@ -17,8 +17,8 @@ client.on('message', async (message) =>{
   try {
     const send = [];
     if(message.body.split(' ')[0].toLowerCase() === '/task'){
-      const sql = 'select * from task where tim = $1 and created = $2';
-      const values = [message.body.split(' ')[1].toLowerCase(), message.body.split(' ')[2]]
+      const sql = 'select * from task where tim ilike $1 and created = $2';
+      const values = [message.body.split(' ')[1], message.body.split(' ')[2]]
       const result = await pool.query(sql, values)
       for (let i = 0; i < result.rows.length; i++) {
         send.push(`- ${result.rows[i].deskripsi}\n`)
@@ -30,8 +30,8 @@ client.on('message', async (message) =>{
       }
     }else if(message.body.split(' ')[0].toLowerCase() === '/now'){
       const taskNow =  moment.tz('Asia/Makassar').format().split('T')[0]
-      const sql = 'select * from task where tim = $1 and created = $2';
-      const values = [message.body.split(' ')[1].toLowerCase(), taskNow]
+      const sql = 'select * from task where tim ilike $1 and created = $2';
+      const values = [message.body.split(' ')[1], taskNow]
       const result = await pool.query(sql, values)
       for (let i = 0; i < result.rows.length; i++) {
         send.push(`- ${result.rows[i].deskripsi}\n`)
@@ -45,6 +45,7 @@ client.on('message', async (message) =>{
       message.reply('Halo Kak, Ada Yang Bisa Nelin Bantu?\n\nBerikut Perintah Yang Nelin Mengerti:\n\n/task <nama tim> <tahun-bulan-tanggal>\ncontohnya /task cctv 2023-12-31\n\n/now <nama_tim>\ncontohnya /now cctv')
     }
   } catch (error) {
+    console.log(error);
     message.reply('Duh Nelin Error, Segera Lapor ke wa.me/+6282236464656 ya kak')
   }
 })
