@@ -42,7 +42,7 @@ client.on('message', async (message) =>{
         message.reply(send.join(''))
       }
     }else if(message.body.split(' ')[0].toLowerCase() === '/all'){
-      const sql = 'select * from task where created = $1';
+      const sql = 'select * from task where created = $1 order by task_id';
       const values = [message.body.split(' ')[1]]
       const result = await pool.query(sql, values)
       if(!result.rows.length){
