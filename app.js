@@ -105,11 +105,12 @@ client.on('message', async (message) =>{
         msgBody += `Kedalaman : ${dataTemp.Infogempa.gempa[i].dalam[0]}\n`
         msgBody += `Magnitudo : *${dataTemp.Infogempa.gempa[i].mag[0]}*\n`
         msgBody += `Area : *${dataTemp.Infogempa.gempa[i].area[0]}*\n`
+        msgBody += `Link : https://www.google.com/maps/search/?api=1&query=${dataTemp.Infogempa.gempa[i].lintang[0]},${dataTemp.Infogempa.gempa[i].bujur[0]}\n`
         msgBody += "==========\n"
       }
       message.reply(msgBody)
     }else{
-      message.reply('Halo Kak, Ada Yang Bisa Nelin Bantu?\n\nBerikut Perintah Yang Nelin Mengerti:\n\n/task <nama tim> <tahun-bulan-tanggal>\ncontohnya: /task cctv 2023-12-31\n\n/now <nama_tim>\ncontohnya: /now cctv\n\n/all <tahun-bulan-tanggal>\ncontohnya: /all 2023-12-31\n\n/8vital\n\n/done <nomor_task>\ncontohnya: /done 99\n\n/job <nomor_task>\ncontohnya: /job 99\n\n')
+      message.reply('Halo Kak, Ada Yang Bisa Nelin Bantu?\n\nBerikut Perintah Yang Nelin Mengerti:\n\n/task <nama tim> <tahun-bulan-tanggal>\ncontohnya: /task cctv 2023-12-31\n\n/now <nama_tim>\ncontohnya: /now cctv\n\n/all <tahun-bulan-tanggal>\ncontohnya: /all 2023-12-31\n\n/8vital\n\n/done <nomor_task>\ncontohnya: /done 99\n\n/job <nomor_task>\ncontohnya: /job 99\n\n/gempa')
     }
   } catch (error) {
     console.error(error);
