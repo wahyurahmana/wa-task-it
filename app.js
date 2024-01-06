@@ -3,6 +3,8 @@ const qrcode = require('qrcode-terminal');
 const moment = require('moment-timezone');
 const {Pool} = require('pg');
 const pool = new Pool()
+const axios = require('axios');
+const xml2js = require('xml2js');
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const client = new Client({
@@ -85,6 +87,27 @@ client.on('message', async (message) =>{
         }
         message.reply(send.join(''))
       }
+    }else if(message.body.split(' ')[0].toLowerCase() === '/gempa'){
+      moment.suppressDeprecationWarnings = true
+      const result = await axios({
+        url: 'https://bmkg-content-inatews.storage.googleapis.com/live30event.xml',
+        method: 'GET'
+      })
+      const xml = result.data
+      const parser = new xml2js.Parser();
+      const dataTemp = await parser.parseStringPromise(xml)
+      let msgBody = ''
+      for(let i = 0; i < 7; i++){
+        let waktuTemp = moment.utc(dataTemp.Infogempa.gempa[i].waktu[0].replaceAll("/", "-")).format('YYYY-MM-DD HH:mm:ss');
+        msgBody += `Waktu : ${moment.utc(waktuTemp).local().format('YYYY-MM-DD HH:mm:ss')}\n`
+        msgBody += `Lintang : ${dataTemp.Infogempa.gempa[i].lintang[0]}\n`
+        msgBody += `Bujur : ${dataTemp.Infogempa.gempa[i].bujur[0]}\n`
+        msgBody += `Kedalaman : ${dataTemp.Infogempa.gempa[i].dalam[0]}\n`
+        msgBody += `Magnitudo : *${dataTemp.Infogempa.gempa[i].mag[0]}*\n`
+        msgBody += `Area : *${dataTemp.Infogempa.gempa[i].area[0]}*\n`
+        msgBody += "==========\n"
+      }
+      message.reply(msgBody)
     }else{
       message.reply('Halo Kak, Ada Yang Bisa Nelin Bantu?\n\nBerikut Perintah Yang Nelin Mengerti:\n\n/task <nama tim> <tahun-bulan-tanggal>\ncontohnya: /task cctv 2023-12-31\n\n/now <nama_tim>\ncontohnya: /now cctv\n\n/all <tahun-bulan-tanggal>\ncontohnya: /all 2023-12-31\n\n/8vital\n\n/done <nomor_task>\ncontohnya: /done 99\n\n/job <nomor_task>\ncontohnya: /job 99\n\n')
     }
