@@ -114,7 +114,7 @@ client.on('message', async (message) =>{
       const taskNow =  moment.tz('Asia/Makassar').format().split('T')[0]
       //proses membuat temporary deksripsi
       const temp = message.body.split(' ');
-      temp.splice(0,1);
+      temp.splice(0,2);
       const sql = 'insert into task(tim, deskripsi, created) values($1, $2, $3) returning task_id;'
       const values = [message.body.split(' ')[1], temp.join(' '), taskNow]
       const result = await pool.query(sql, values)
