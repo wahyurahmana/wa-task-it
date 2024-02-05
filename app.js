@@ -117,6 +117,7 @@ client.on('message', async (message) =>{
       if(!result.rows.length){
         message.reply('Sepertinya Tidak Ada Data Yang Ditambahkan Deh Kak')
       }else{
+        console.log(result.rows);
         message.reply(`Berhasil Ditambahkan Dengan ID ${result.rows[0]}`)
       }
     }else{
