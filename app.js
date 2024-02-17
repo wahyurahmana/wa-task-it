@@ -129,8 +129,20 @@ client.on('message', async (message) =>{
           message.reply(`Berhasil Ditambahkan Dengan ID ${result.rows[0].task_id}`)
         }
       }
+    }else if(message.body.split(' ')[0].toLowerCase() === '/update'){
+      //proses membuat temporary deksripsi
+      const temp = message.body.split(' ');
+      temp.splice(0,2);
+      const sql = 'update task set deskripsi = $1, updated_by = $2 where task_id = $3 returning task_id;'
+      const values = [temp.join(' '),message.from.split('@')[0], message.body.split(' ')[1]]
+      const result = await pool.query(sql, values)
+      if(!result.rows.length){
+        message.reply('Sepertinya Tidak Ada Data Yang DiUpdate Deh Kak')
+      }else{
+        message.reply(`Berhasil Update ID ${result.rows[0].task_id}`)
+      }
     }else{
-      message.reply('Halo Kak, Ada Yang Bisa Nelin Bantu?\n\nBerikut Perintah Yang Nelin Mengerti:\n\n/task <nama tim> <tahun-bulan-tanggal>\ncontohnya: /task cctv 2023-12-31\n\n/now <nama_tim>\ncontohnya: /now cctv\n\n/all <tahun-bulan-tanggal>\ncontohnya: /all 2023-12-31\n\n/8vital\n\n/done <nomor_task>\ncontohnya: /done 99\n\n/job <nomor_task>\ncontohnya: /job 99\n\n/gempa\n\n/add <nama_tim> <deskripsi>\ncontohnya: /add cctv pm kamera')
+      message.reply('Halo Kak, Ada Yang Bisa Nelin Bantu?\n\nBerikut Perintah Yang Nelin Mengerti:\n\n/task <nama tim> <tahun-bulan-tanggal>\ncontohnya: /task cctv 2023-12-31\n\n/now <nama_tim>\ncontohnya: /now cctv\n\n/all <tahun-bulan-tanggal>\ncontohnya: /all 2023-12-31\n\n/8vital\n\n/done <nomor_task>\ncontohnya: /done 99\n\n/job <nomor_task>\ncontohnya: /job 99\n\n/gempa\n\n/add <nama_tim> <deskripsi>\ncontohnya: /add cctv pm kamera\n\nupdate <nomor_task> <deskripsi>\ncontohnya: /update 123 penarikan kabel 100-999 m')
     }
   } catch (error) {
     console.error(error);
