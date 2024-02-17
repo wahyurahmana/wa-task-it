@@ -17,6 +17,7 @@ client.on('qr', qr => {
 
 client.on('message', async (message) =>{
   try {
+    const teamIT = ['tsi', 'aims', 'telkom', 'itfm', 'cctv', 'wireless', 'indosat', 'lanwan', 'telkomsel', 'voice', 'xl']
     const send = [];
     if(message.body.split(' ')[0].toLowerCase() === '/task'){
       const sql = 'select * from task where tim ilike $1 and created = $2';
@@ -110,18 +111,23 @@ client.on('message', async (message) =>{
       }
       message.reply(msgBody)
     }else if(message.body.split(' ')[0].toLowerCase() === '/add'){
-      //proses membuat created today
-      const taskNow =  moment.tz('Asia/Makassar').format().split('T')[0]
-      //proses membuat temporary deksripsi
-      const temp = message.body.split(' ');
-      temp.splice(0,2);
-      const sql = 'insert into task(tim, deskripsi, created) values($1, $2, $3) returning task_id;'
-      const values = [message.body.split(' ')[1], temp.join(' '), taskNow]
-      const result = await pool.query(sql, values)
-      if(!result.rows.length){
-        message.reply('Sepertinya Tidak Ada Data Yang Ditambahkan Deh Kak')
+      //validasi nama tim harus benar
+      if(!teamIT.includes(message.body.split(' ')[1])){
+        message.reply('Nama Tim Tidak Terdaftar Kak!')
       }else{
-        message.reply(`Berhasil Ditambahkan Dengan ID ${result.rows[0].task_id}`)
+        //proses membuat created today
+        const taskNow =  moment.tz('Asia/Makassar').format().split('T')[0]
+        //proses membuat temporary deksripsi
+        const temp = message.body.split(' ');
+        temp.splice(0,2);
+        const sql = 'insert into task(tim, deskripsi, created) values($1, $2, $3) returning task_id;'
+        const values = [message.body.split(' ')[1], temp.join(' '), taskNow]
+        const result = await pool.query(sql, values)
+        if(!result.rows.length){
+          message.reply('Sepertinya Tidak Ada Data Yang Ditambahkan Deh Kak')
+        }else{
+          message.reply(`Berhasil Ditambahkan Dengan ID ${result.rows[0].task_id}`)
+        }
       }
     }else{
       message.reply('Halo Kak, Ada Yang Bisa Nelin Bantu?\n\nBerikut Perintah Yang Nelin Mengerti:\n\n/task <nama tim> <tahun-bulan-tanggal>\ncontohnya: /task cctv 2023-12-31\n\n/now <nama_tim>\ncontohnya: /now cctv\n\n/all <tahun-bulan-tanggal>\ncontohnya: /all 2023-12-31\n\n/8vital\n\n/done <nomor_task>\ncontohnya: /done 99\n\n/job <nomor_task>\ncontohnya: /job 99\n\n/gempa\n\n/add <nama_tim> <deskripsi>\ncontohnya: /add cctv pm kamera')
