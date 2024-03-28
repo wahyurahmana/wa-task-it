@@ -112,7 +112,7 @@ client.on('message', async (message) =>{
       message.reply(msgBody)
     }else if(message.body.split(' ')[0].toLowerCase() === '/add'){
       //validasi nama tim harus benar
-      if(!teamIT.includes(message.body.split(' ')[1])){
+      if(!teamIT.includes(message.body.split(' ')[1].toLocaleLowerCase())){
         message.reply('Nama Tim Tidak Terdaftar Kak!')
       }else{
         //proses membuat created today
