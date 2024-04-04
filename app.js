@@ -5,10 +5,17 @@ const {Pool} = require('pg');
 const pool = new Pool()
 const axios = require('axios');
 const xml2js = require('xml2js');
+const wwebVersion = '2.2407.3';
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const client = new Client({
-	authStrategy: new LocalAuth()
+	authStrategy: new LocalAuth({
+    clientId: 'BOT'
+  }),
+  webVersionCache: {
+    type: 'remote',
+    remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/${wwebVersion}.html`,
+  },
 });
 
 client.on('qr', qr => {
