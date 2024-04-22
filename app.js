@@ -74,15 +74,30 @@ client.on('message', async (message) =>{
     }else if(message.body.split(' ')[0].toLowerCase() === '/8vital'){
       message.reply('1. *JANGAN PERNAH* mengoperasikan peralatan apapun kecuali telah dilatih, kompeten, dan mendapat izin mengoperasikannya.\n\n2. *JANGAN PERNAH* melepas, memotong, atau memodifikasi alat pelindung keselamatan tanpa izin.\n\n3. *JANGAN PERNAH* bekerja pada peralatan tanpa dilengkapi dengan prosedur isolasi.\n\n4. *JANGAN PERNAH* menggunakan alat angkat diluar kriteria desain yang telah ditentukan atau memosisikan diri di bawah muatan yang menggantung.\n\n5. *JANGAN PERNAH* bekerja di ketinggian tanpa mengenakan alat pelindung bahaya terjatuh.\n\n6. *JANGAN PERNAH* memasuki ruang terbatas atau area terlarang tanpa izin.\n\n7. *JANGAN PERNAH* menggunakan telepon genggam saat mengoperasikan kendaraan atau perlatan bergerak.\n\n8. *JANGAN PERNAH* mengoperasikan atau duduk sebagai penumpang pada kendaraan atau peralatan bergerak tanpa menggunakan sabuk pengaman.')
     }else if(message.body.split(' ')[0].toLowerCase() === '/done'){
-      const sql = 'update task set status = $1, updated_by = $2 where task_id = $3 returning deskripsi';
-      const values = ['done', message.from.split('@')[0], message.body.split(' ')[1]];
-      const result = await pool.query(sql, values);
-      message.reply(`${result.rows[0].deskripsi} telah *BERHASIL DI UPDATE*`)
+      const taskId = message.body.split(' ')[1].split(',')
+      for(let i = 0; i < taskId.length; i++){
+        if(!isNaN(taskId[i])){
+          const sql = 'update task set status = $1, updated_by = $2 where task_id = $3 returning deskripsi';
+          const values = ['done', message.from.split('@')[0], taskId[i]];
+          const result = await pool.query(sql, values);
+          message.reply(`${result.rows[0].deskripsi} telah *BERHASIL DI UPDATE*`)
+        }else{
+          message.reply(`Kayaknya kakak Typo Deh, Coba Cek Lagi Penulisannya kak!`)
+        }
+      }
     }else if(message.body.split(' ')[0].toLowerCase() === '/job'){
-      const sql = 'update task set status = $1, updated_by = $2 where task_id = $3 returning deskripsi';
-      const values = ['', message.from.split('@')[0], message.body.split(' ')[1]];
-      const result = await pool.query(sql, values);
-      message.reply(`${result.rows[0].deskripsi} telah *BERHASIL DI UPDATE*`)
+      const taskId = message.body.split(' ')[1].split(',')
+      for(let i = 0; i < taskId.length; i++){
+        if(!isNaN(taskId[i])){
+          const sql = 'update task set status = $1, updated_by = $2 where task_id = $3 returning deskripsi';
+          const values = ['', message.from.split('@')[0], taskId[i]];
+          const result = await pool.query(sql, values);
+          message.reply(`${result.rows[0].deskripsi} telah *BERHASIL DI UPDATE*`)
+        }else{
+          message.reply(`Kayaknya kakak Typo Deh, Coba Cek Lagi Penulisannya kak!`)
+        }
+      }
+      
     }else if(message.body.split(' ')[0].toLowerCase() === '/log'){
       const sql = 'select * from task where tim ilike $1 and created = $2';
       const values = [message.body.split(' ')[1], message.body.split(' ')[2]]
