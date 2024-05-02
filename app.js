@@ -152,6 +152,10 @@ client.on('message', async (message) =>{
         }
       }
     }else if(message.body.split(' ')[0].toLowerCase() === '/update'){
+      //pengambilan data sebelum dirubah
+      const sqlGet = 'select * from task where task_id = $1;'
+      const valuesGet = [essage.body.split(' ')[1]]
+      const resultGet = await pool.query(sqlGet, valuesGet)
       //proses membuat temporary deksripsi
       const temp = message.body.split(' ');
       temp.splice(0,2);
@@ -161,7 +165,7 @@ client.on('message', async (message) =>{
       if(!result.rows.length){
         message.reply('Sepertinya Tidak Ada Data Yang DiUpdate Deh Kak')
       }else{
-        message.reply(`Berhasil Update ID ${result.rows[0].task_id}`)
+        message.reply(`Data Sebelum di Update Ini Ya Kak ${resultGet.rows[0].deskripsi} dan Berhasil Di Update ID ${result.rows[0].task_id}`)
       }
     }else{
       message.reply('Halo Kak, Ada Yang Bisa Nelin Bantu?\n\nBerikut Perintah Yang Nelin Mengerti:\n\n/task <nama tim> <tahun-bulan-tanggal>\ncontohnya: /task cctv 2023-12-31\n\n/now <nama_tim>\ncontohnya: /now cctv\n\n/all <tahun-bulan-tanggal>\ncontohnya: /all 2023-12-31\n\n/done <nomor_task>\ncontohnya: /done 99\n\n/job <nomor_task>\ncontohnya: /job 99\n\n/log <nama tim> <tahun-bulan-tanggal>\ncontohnya: /log cctv 2023-12-31\n\n/gempa\n\n/add <nama_tim> <deskripsi>\ncontohnya: /add cctv pm kamera\n\n/update <nomor_task> <deskripsi>\ncontohnya: /update 123 penarikan kabel 100-999 m')
