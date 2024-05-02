@@ -154,7 +154,7 @@ client.on('message', async (message) =>{
     }else if(message.body.split(' ')[0].toLowerCase() === '/update'){
       //pengambilan data sebelum dirubah
       const sqlGet = 'select * from task where task_id = $1;'
-      const valuesGet = [essage.body.split(' ')[1]]
+      const valuesGet = [message.body.split(' ')[1]]
       const resultGet = await pool.query(sqlGet, valuesGet)
       //proses membuat temporary deksripsi
       const temp = message.body.split(' ');
