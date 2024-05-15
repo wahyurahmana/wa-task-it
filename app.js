@@ -174,8 +174,28 @@ client.on('message', async (message) =>{
       }else{
         message.reply(`Ingat Yang Sebelumnya Ini *${resultGet.rows[0].deskripsi}*, Jangan Asal Update Aja! Kerja Yang Benar!`)
       }
-    }else{
+    }else if(message.body.split(' ')[0].toLowerCase() === '/help'){
       message.reply('Halo Kak, Ada Yang Bisa Nelin Bantu?\n\nBerikut Perintah Yang Nelin Mengerti:\n\n/task <nama tim> <tahun-bulan-tanggal>\ncontohnya: /task cctv 2023-12-31\n\n/now <nama_tim>\ncontohnya: /now cctv\n\n/all <tahun-bulan-tanggal>\ncontohnya: /all 2023-12-31\n\n/done <nomor_task>\ncontohnya: /done 99\n\n/job <nomor_task>\ncontohnya: /job 99\n\n/log <nama tim> <tahun-bulan-tanggal>\ncontohnya: /log cctv 2023-12-31\n\n/gempa\n\n/add <nama_tim> <deskripsi>\ncontohnya: /add cctv pm kamera\n\n/update <nomor_task> <deskripsi>\ncontohnya: /update 123 penarikan kabel 100-999 m')
+    }else{
+      const body = JSON.stringify({
+        model: 'llama3',
+        prompt: message.body,
+        options: {
+            num_predict: 200,
+            temperature: 0,
+            top_k: 20
+        },
+        stream: false
+      });
+      const { data } = await axios({
+        url: 'http://103.175.220.229:11434/api/generate',
+        method: 'POST',
+        headers : {
+          'Content-Type' : 'application/json'
+        },
+        body
+      })
+      message.reply(data.response.trim())
     }
   } catch (error) {
     console.error(error);
