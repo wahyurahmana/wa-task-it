@@ -31,7 +31,9 @@ client.on('message', async (message) =>{
       const values = [message.body.split(' ')[1], message.body.split(' ')[2]]
       const result = await pool.query(sql, values)
       if(!result.rows.length){
-        message.reply('Sepertinya Tidak Ada Data Yang Ditemukan Deh Kak')
+        const pesan = ['Mau Cari Apa?', 'Belum DiUpload Datanya!', 'Coba Tanya Sama Yang Presenter, Sudah Dikirim Belum?', 'Belum Ada!', 'Lihat Command Yang Benar!','Ketik Yang Benar!']
+        const balas = Math.floor(Math.random() * pesan.length)
+        message.reply(pesan[balas])
       }else{
         for (let i = 0; i < result.rows.length; i++) {
           if(result.rows[i].status === 'done'){
@@ -48,7 +50,9 @@ client.on('message', async (message) =>{
       const values = [message.body.split(' ')[1], taskNow]
       const result = await pool.query(sql, values)
       if(!result.rows.length){
-        message.reply('Sepertinya Tidak Ada Data Yang Ditemukan Deh Kak')
+        const pesan = ['Mau Cari Apa?', 'Belum DiUpload Datanya!', 'Coba Tanya Sama Yang Presenter, Sudah Dikirim Belum?', 'Belum Ada!', 'Lihat Command Yang Benar!','Ketik Yang Benar!']
+        const balas = Math.floor(Math.random() * pesan.length)
+        message.reply(pesan[balas])
       }else{
         for (let i = 0; i < result.rows.length; i++) {
           if(result.rows[i].status === 'done'){
@@ -64,7 +68,9 @@ client.on('message', async (message) =>{
       const values = [message.body.split(' ')[1]]
       const result = await pool.query(sql, values)
       if(!result.rows.length){
-        message.reply('Sepertinya Tidak Ada Data Yang Ditemukan Deh Kak')
+        const pesan = ['Mau Cari Apa?', 'Belum DiUpload Datanya!', 'Coba Tanya Sama Yang Presenter, Sudah Dikirim Belum?', 'Belum Ada!', 'Lihat Command Yang Benar!','Ketik Yang Benar!']
+        const balas = Math.floor(Math.random() * pesan.length)
+        message.reply(pesan[balas])
       }else{
         for (let i = 0; i < result.rows.length; i++) {
           send.push(`*${result.rows[i].tim}* - ${result.rows[i].deskripsi}\n`)
@@ -82,7 +88,7 @@ client.on('message', async (message) =>{
           const result = await pool.query(sql, values);
           message.reply(`${result.rows[0].deskripsi} telah *BERHASIL DI UPDATE*`)
         }else{
-          message.reply(`Kayaknya kakak Typo Deh, Coba Cek Lagi Penulisannya kak!`)
+          message.reply(`Mau Cari Apa? Ketik Yang Benar!`)
         }
       }
     }else if(message.body.split(' ')[0].toLowerCase() === '/job'){
@@ -94,7 +100,7 @@ client.on('message', async (message) =>{
           const result = await pool.query(sql, values);
           message.reply(`${result.rows[0].deskripsi} telah *BERHASIL DI UPDATE*`)
         }else{
-          message.reply(`Kayaknya kakak Typo Deh, Coba Cek Lagi Penulisannya kak!`)
+          message.reply(`Mau Cari Apa? Ketik Yang Benar!`)
         }
       }
       
@@ -135,7 +141,7 @@ client.on('message', async (message) =>{
     }else if(message.body.split(' ')[0].toLowerCase() === '/add'){
       //validasi nama tim harus benar
       if(!teamIT.includes(message.body.split(' ')[1].toLocaleLowerCase())){
-        message.reply('Nama Tim Tidak Terdaftar Kak!')
+        message.reply('Lihat Baik-Baik, Nama TIM nya Ada Gk?')
       }else{
         //proses membuat created today
         const taskNow =  moment.tz('Asia/Makassar').format().split('T')[0]
@@ -146,9 +152,10 @@ client.on('message', async (message) =>{
         const values = [message.body.split(' ')[1], temp.join(' '), taskNow]
         const result = await pool.query(sql, values)
         if(!result.rows.length){
-          message.reply('Sepertinya Tidak Ada Data Yang Ditambahkan Deh Kak')
+          message.reply('Mau Tambah Apa? Coba Yang Benar Ketiknya!')
         }else{
-          message.reply(`Berhasil Ditambahkan Dengan ID ${result.rows[0].task_id}`)
+          message.reply(`Sudah Masuk Tasknya Bro Dengan ID *${result.rows[0].task_id}*`)
+          message.reply('Langsung Donekan Aja Kalau Sudah Selesai!')
         }
       }
     }else if(message.body.split(' ')[0].toLowerCase() === '/update'){
@@ -163,16 +170,16 @@ client.on('message', async (message) =>{
       const values = [temp.join(' '),message.from.split('@')[0], message.body.split(' ')[1]]
       const result = await pool.query(sql, values)
       if(!result.rows.length){
-        message.reply('Sepertinya Tidak Ada Data Yang DiUpdate Deh Kak')
+        message.reply('Mau Update Apa? Coba Yang Benar Ketiknya!')
       }else{
-        message.reply(`Data Sebelum di Update Ini Ya Kak ${resultGet.rows[0].deskripsi} dan Berhasil Di Update ID ${result.rows[0].task_id}`)
+        message.reply(`Ingat Yang Sebelumnya Ini *${resultGet.rows[0].deskripsi}*, Jangan Asal Update Aja! Kerja Yang Benar!`)
       }
     }else{
       message.reply('Halo Kak, Ada Yang Bisa Nelin Bantu?\n\nBerikut Perintah Yang Nelin Mengerti:\n\n/task <nama tim> <tahun-bulan-tanggal>\ncontohnya: /task cctv 2023-12-31\n\n/now <nama_tim>\ncontohnya: /now cctv\n\n/all <tahun-bulan-tanggal>\ncontohnya: /all 2023-12-31\n\n/done <nomor_task>\ncontohnya: /done 99\n\n/job <nomor_task>\ncontohnya: /job 99\n\n/log <nama tim> <tahun-bulan-tanggal>\ncontohnya: /log cctv 2023-12-31\n\n/gempa\n\n/add <nama_tim> <deskripsi>\ncontohnya: /add cctv pm kamera\n\n/update <nomor_task> <deskripsi>\ncontohnya: /update 123 penarikan kabel 100-999 m')
     }
   } catch (error) {
     console.error(error);
-    message.reply('Duh Nelin Error, Segera Lapor ke wa.me/+6282236464656 ya kak')
+    message.reply('Ketik Yang Benar! Mau Cari Apa?')
   }
 })
 
