@@ -174,7 +174,29 @@ client.on('message', async (message) =>{
       }else{
         message.reply(`Ingat Yang Sebelumnya Ini *${resultGet.rows[0].deskripsi}*, Jangan Asal Update Aja! Kerja Yang Benar!`)
       }
-    }else{
+    }else if(message.body.split(' ')[0].toLowerCase() === '/notif'){
+      //proses mengambil kalimat setelah command /notif
+      const temp = message.body.split(' ');
+      temp.splice(0,1);
+      const obj = JSON.parse(temp[0])
+      const createdNow =  moment.tz('Asia/Makassar').format().split('T')[0]
+      const sql = 'select * from task where created = $1 order by task_id';
+      const values = [createdNow]
+      const {rows} = await pool.query(sql, values)
+      for(const k in obj){
+        //pengambilan task berdasarkan tim
+        const task = rows.filter(e => e.tim === k)
+        //pengambilan deskripsi berdasarkan task tim
+        const deskripsi = task.map(el => {
+          return el.deskripsi
+        })
+        //proses pengiriman deskripsi task ke nomor WA sesuai tim
+        for(let i = 0; i < obj[k][i].length; i++){
+          client.sendMessage(obj[k][i], deskripsi.join("\n"))
+        }
+      }
+    }
+    else{
       message.reply('Halo Kak, Ada Yang Bisa Nelin Bantu?\n\nBerikut Perintah Yang Nelin Mengerti:\n\n/task <nama tim> <tahun-bulan-tanggal>\ncontohnya: /task cctv 2023-12-31\n\n/now <nama_tim>\ncontohnya: /now cctv\n\n/all <tahun-bulan-tanggal>\ncontohnya: /all 2023-12-31\n\n/done <nomor_task>\ncontohnya: /done 99\n\n/job <nomor_task>\ncontohnya: /job 99\n\n/log <nama tim> <tahun-bulan-tanggal>\ncontohnya: /log cctv 2023-12-31\n\n/gempa\n\n/add <nama_tim> <deskripsi>\ncontohnya: /add cctv pm kamera\n\n/update <nomor_task> <deskripsi>\ncontohnya: /update 123 penarikan kabel 100-999 m')
     }
   } catch (error) {
