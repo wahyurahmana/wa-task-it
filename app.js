@@ -191,7 +191,7 @@ client.on('message', async (message) =>{
           return el.deskripsi
         })
         //proses pengiriman deskripsi task ke nomor WA sesuai tim
-        for(let i = 0; i < obj[k][i].length; i++){
+        for(let i = 0; i < obj[k].length; i++){
           client.sendMessage(obj[k][i], deskripsi.join("\n"))
         }
       }
