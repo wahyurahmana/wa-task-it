@@ -192,7 +192,8 @@ client.on('message', async (message) =>{
         })
         //proses pengiriman deskripsi task ke nomor WA sesuai tim
         for(let i = 0; i < obj[k].length; i++){
-          client.sendMessage(obj[k][i], deskripsi.join("\n"))
+          const num = await client.getNumberId(obj[k][i])
+          client.sendMessage(num._serialized, deskripsi.join("\n"))
         }
       }
     }
