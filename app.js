@@ -185,7 +185,7 @@ client.on('message', async (message) =>{
       const {rows} = await pool.query(sql, values)
       for(const k in obj){
         //pengambilan task berdasarkan tim
-        const task = rows.filter(e => e.tim === k)
+        const task = rows.filter(e => e.tim.toLowerCase() === k.toLowerCase())
         //pengambilan deskripsi berdasarkan task tim
         const deskripsi = task.map(el => {
           return el.deskripsi
