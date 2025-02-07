@@ -27,7 +27,7 @@ client.on('qr', qr => {
     qrcode.generate(qr, {small: true});
 });
 
-client.on('message_create', async message => {
+client.on('message', async message => {
 	try {
     const teamIT = ['tsi', 'aims', 'telkom', 'itfm', 'cctv', 'wireless', 'indosat', 'lanwan', 'telkomsel', 'voice', 'xl', 'satnet', 'mii']
     const send = [];
