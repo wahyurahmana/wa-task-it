@@ -1,16 +1,13 @@
 require('dotenv').config()
+const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const moment = require('moment-timezone');
 const {Pool} = require('pg');
 const pool = new Pool()
-const axios = require('axios');
-const xml2js = require('xml2js');
-const wwebVersion = '2.2412.54';
 
-const { Client, LocalAuth } = require('whatsapp-web.js');
 const client = new Client({
 	authStrategy: new LocalAuth({
-    clientId: 'BOT'
+    clientId: 'WA_TASK_IT'
   }),
   puppeteer: {
     headless: true,
@@ -18,17 +15,21 @@ const client = new Client({
   },
   webVersionCache: {
     type: 'remote',
-    remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/${wwebVersion}.html`,
+    remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html',
   },
 });
 
-client.on('qr', qr => {
-  qrcode.generate(qr, {small: true});
+client.on('ready', () => {
+    console.log('Client is ready!');
 });
 
-client.on('message', async (message) =>{
-  try {
-    const teamIT = ['tsi', 'aims', 'telkom', 'itfm', 'cctv', 'wireless', 'indosat', 'lanwan', 'telkomsel', 'voice', 'xl']
+client.on('qr', qr => {
+    qrcode.generate(qr, {small: true});
+});
+
+client.on('message_create', async message => {
+	try {
+    const teamIT = ['tsi', 'aims', 'telkom', 'itfm', 'cctv', 'wireless', 'indosat', 'lanwan', 'telkomsel', 'voice', 'xl', 'satnet', 'mii']
     const send = [];
     if(message.body.split(' ')[0].toLowerCase() === '/task'){
       const sql = 'select * from task where tim ilike $1 and created = $2';
@@ -120,28 +121,6 @@ client.on('message', async (message) =>{
         }
         message.reply(send.join(''))
       }
-    }else if(message.body.split(' ')[0].toLowerCase() === '/gempa'){
-      moment.suppressDeprecationWarnings = true
-      const result = await axios({
-        url: 'https://bmkg-content-inatews.storage.googleapis.com/live30event.xml',
-        method: 'GET'
-      })
-      const xml = result.data
-      const parser = new xml2js.Parser();
-      const dataTemp = await parser.parseStringPromise(xml)
-      let msgBody = ''
-      for(let i = 0; i < 7; i++){
-        let waktuTemp = moment.utc(dataTemp.Infogempa.gempa[i].waktu[0].replaceAll("/", "-")).format('YYYY-MM-DD HH:mm:ss');
-        msgBody += `Waktu : ${moment.utc(waktuTemp).local().format('YYYY-MM-DD HH:mm:ss')}\n`
-        msgBody += `Lintang : ${dataTemp.Infogempa.gempa[i].lintang[0]}\n`
-        msgBody += `Bujur : ${dataTemp.Infogempa.gempa[i].bujur[0]}\n`
-        msgBody += `Kedalaman : ${dataTemp.Infogempa.gempa[i].dalam[0]}\n`
-        msgBody += `Magnitudo : *${dataTemp.Infogempa.gempa[i].mag[0]}*\n`
-        msgBody += `Area : *${dataTemp.Infogempa.gempa[i].area[0]}*\n`
-        msgBody += `Link : https://www.google.com/maps/search/?api=1&query=${dataTemp.Infogempa.gempa[i].lintang[0]},${dataTemp.Infogempa.gempa[i].bujur[0]}\n`
-        msgBody += "==========\n"
-      }
-      message.reply(msgBody)
     }else if(message.body.split(' ')[0].toLowerCase() === '/add'){
       //validasi nama tim harus benar
       if(!teamIT.includes(message.body.split(' ')[1].toLocaleLowerCase())){
@@ -178,44 +157,14 @@ client.on('message', async (message) =>{
       }else{
         message.reply(`Ingat Yang Sebelumnya Ini *${resultGet.rows[0].deskripsi}*, Jangan Asal Update Aja! Kerja Yang Benar!`)
       }
-    }else if(message.body.split(' ')[0].toLowerCase() === '/notif'){
-      //proses mengambil kalimat setelah command /notif
-      const temp = message.body.split(' ');
-      temp.splice(0,1);
-      const obj = JSON.parse(temp[0])
-      const createdNow =  moment.tz('Asia/Makassar').format().split('T')[0]
-      const sql = 'select * from task where created = $1 order by task_id';
-      const values = [createdNow]
-      const {rows} = await pool.query(sql, values)
-      for(const k in obj){
-        //pengambilan task berdasarkan tim
-        const task = rows.filter(e => e.tim.toLowerCase() === k.toLowerCase())
-        //pengambilan deskripsi berdasarkan task tim
-        const deskripsi = task.map(el => {
-          return el.deskripsi
-        })
-        //proses pengiriman deskripsi task ke nomor WA sesuai tim
-        for(let i = 0; i < obj[k].length; i++){
-          const num = await client.getNumberId(obj[k][i])
-          client.sendMessage(num._serialized, deskripsi.join("\n"))
-        }
-      }
-    }
-    else{
+    }else{
       message.reply('Halo Kak, Ada Yang Bisa Nelin Bantu?\n\nBerikut Perintah Yang Nelin Mengerti:\n\n/task <nama tim> <tahun-bulan-tanggal>\ncontohnya: /task cctv 2023-12-31\n\n/now <nama_tim>\ncontohnya: /now cctv\n\n/all <tahun-bulan-tanggal>\ncontohnya: /all 2023-12-31\n\n/done <nomor_task>\ncontohnya: /done 99\n\n/job <nomor_task>\ncontohnya: /job 99\n\n/log <nama tim> <tahun-bulan-tanggal>\ncontohnya: /log cctv 2023-12-31\n\n/gempa\n\n/add <nama_tim> <deskripsi>\ncontohnya: /add cctv pm kamera\n\n/update <nomor_task> <deskripsi>\ncontohnya: /update 123 penarikan kabel 100-999 m')
     }
   } catch (error) {
     console.error(error);
     message.reply('Ketik Yang Benar! Mau Cari Apa?')
   }
-})
-
-client.on('ready', () => {
-  console.log('Client is ready!');
 });
 
-client.on('disconnected', (message) => {
-  message.reply('Duh Nelin Error, Segera Lapor ke wa.me/+6282236464656 ya kak')
-})
 
 client.initialize();
