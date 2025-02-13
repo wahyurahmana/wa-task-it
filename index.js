@@ -29,7 +29,7 @@ client.on('qr', qr => {
 
 client.on('message', async message => {
 	try {
-    const teamIT = ['tsi', 'aims', 'telkom', 'itfm', 'cctv', 'wireless', 'indosat', 'lanwan', 'telkomsel', 'voice', 'xl', 'satnet', 'mii']
+    const teamIT = ['tsi', 'aims', 'telkom', 'itfm', 'ruswin', 'wireless', 'indosat', 'lan/wan', 'telkomsel', 'voice', 'xl', 'satnet', 'mii']
     const send = [];
     if(message.body.split(' ')[0].toLowerCase() === '/task'){
       const sql = 'select * from task where tim ilike $1 and created = $2';
